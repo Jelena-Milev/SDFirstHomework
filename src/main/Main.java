@@ -5,7 +5,7 @@
  */
 package main;
 
-import forms.MainForm;
+import ui.forms.MainForm;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 
