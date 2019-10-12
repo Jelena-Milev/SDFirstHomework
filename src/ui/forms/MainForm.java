@@ -8,9 +8,13 @@ package ui.forms;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
+import java.awt.Insets;
+import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javax.swing.BoxLayout;
@@ -19,6 +23,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.EmptyBorder;
 import util.SystemOperations;
 
 /**
@@ -26,7 +34,7 @@ import util.SystemOperations;
  * @author jeca
  */
 public class MainForm extends JFrame {
-    
+
     private SystemOperations systemOperations;
 
     private JLabel label1;
@@ -48,7 +56,7 @@ public class MainForm extends JFrame {
 
     private void prepareForm() {
         this.setTitle("Simple Calculator");
-        this.setPreferredSize(new Dimension(600, 400));
+        this.setPreferredSize(new Dimension(400, 400));
 
         this.initializeComponents();
         this.putComponentsOnForm();
@@ -59,15 +67,16 @@ public class MainForm extends JFrame {
         this.substactButton.addActionListener(
                 (e) -> this.substractButtonPressed()
         );
-        this.addErrorListener(this.aTxtField, this.errorLabelA);
-        this.addErrorListener(this.bTxtField, this.errorLabelB);
+        this.addErrorListener(this.aTxtField);
+        this.addErrorListener(this.bTxtField);
+
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     private void initializeComponents() {
-        this.label1 = new JLabel("a: ");
-        this.label2 = new JLabel("b: ");
-        this.label3 = new JLabel("c: ");
+        this.label1 = new JLabel("a: ", SwingConstants.RIGHT);
+        this.label2 = new JLabel("b: ", SwingConstants.RIGHT);
+        this.label3 = new JLabel("c: ", SwingConstants.RIGHT);
         this.errorLabelA = new JLabel();
         this.errorLabelB = new JLabel();
         this.aTxtField = new JTextField();
@@ -81,21 +90,27 @@ public class MainForm extends JFrame {
     }
 
     private void putComponentsOnForm() {
-        GridLayout layout = new GridLayout(6, 2, 40, 50);
-        this.setLayout(layout);
+        JPanel panel = new JPanel();
+        panel.setBorder(new EmptyBorder(new Insets(25, 40, 25, 40)));
+        GridLayout layout = new GridLayout(0, 2, 10, 5);
+        layout.preferredLayoutSize(this.getContentPane());
+        panel.setLayout(layout);
+        this.getContentPane().add(panel);
 
-        this.add(this.label1);
-        this.add(this.aTxtField);
-        this.add(this.errorLabelA);
+        panel.add(this.label1);
+        panel.add(this.aTxtField);
+        panel.add(new JLabel(" "));
+        panel.add(this.errorLabelA);
 
-        this.add(this.label2);
-        this.add(this.bTxtField);
-        this.add(this.errorLabelB);
+        panel.add(this.label2);
+        panel.add(this.bTxtField);
+        panel.add(new JLabel(" "));
+        panel.add(this.errorLabelB);
 
-        this.add(this.label3);
-        this.add(this.cTxtField);
-        this.add(this.addButton);
-        this.add(this.substactButton);
+        panel.add(this.label3);
+        panel.add(this.cTxtField);
+        panel.add(this.addButton);
+        panel.add(this.substactButton);
 
         pack();
     }
@@ -114,16 +129,7 @@ public class MainForm extends JFrame {
         this.cTxtField.setText(c + "");
     }
 
-    private boolean isContentValid(JTextField txtField) {
-        try {
-            Double.parseDouble(txtField.getText());
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-    
-    private void addErrorListener(JTextField txtField, JLabel errorLabel){
+    private void addErrorListener(JTextField txtField) {
         txtField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -135,15 +141,34 @@ public class MainForm extends JFrame {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                boolean contentValid = isContentValid(txtField);
+                boolean contentAValid = isContentValid(aTxtField);
+                boolean contentBValid = isContentValid(bTxtField);
+                boolean contentValid = contentAValid && contentBValid;
+
                 addButton.setEnabled(contentValid);
                 substactButton.setEnabled(contentValid);
-                if (contentValid) {
-                    errorLabel.setText("");
+
+                if (contentAValid) {
+                    errorLabelA.setText("");
                 } else {
-                    errorLabel.setText("Greska. Morate uneti broj.");
+                    errorLabelA.setText("Unesite broj.");
+                }
+
+                if (contentBValid) {
+                    errorLabelB.setText("");
+                } else {
+                    errorLabelB.setText("Unesite broj.");
                 }
             }
         });
+    }
+
+    private boolean isContentValid(JTextField txtField) {
+        try {
+            Double.parseDouble(txtField.getText());
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
