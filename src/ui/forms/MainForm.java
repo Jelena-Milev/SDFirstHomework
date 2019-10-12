@@ -19,12 +19,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import util.SystemOperations;
 
 /**
  *
  * @author jeca
  */
 public class MainForm extends JFrame {
+    
+    private SystemOperations systemOperations;
 
     private JLabel label1;
     private JLabel label2;
@@ -38,6 +41,7 @@ public class MainForm extends JFrame {
     private JButton substactButton;
 
     public MainForm() {
+        this.systemOperations = SystemOperations.getSystemOperationsInstance();
         prepareForm();
         setLocationRelativeTo(this.getParent());
     }
@@ -99,14 +103,14 @@ public class MainForm extends JFrame {
     private void addButtonPressed() {
         double a = Double.parseDouble(this.aTxtField.getText());
         double b = Double.parseDouble(this.bTxtField.getText());
-        double c = a + b;
+        double c = this.systemOperations.add(a, b);
         this.cTxtField.setText(c + "");
     }
 
     private void substractButtonPressed() {
         double a = Double.parseDouble(this.aTxtField.getText());
         double b = Double.parseDouble(this.bTxtField.getText());
-        double c = a - b;
+        double c = this.systemOperations.substract(a, b);
         this.cTxtField.setText(c + "");
     }
 
